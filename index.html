@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #1e90ff;
+        }
+        form {
+            margin: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        form label {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        form input, form select, form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #1e90ff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        th {
+            background-color: #1e90ff;
+            color: #fff;
+        }
+        button:hover {
+            background-color: #0b78c2;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Engineer Task Tracker</h1>
+
+<form id="taskForm">
+    <!-- Date inputs -->
+    <label for="weekStart">Week Start Date:</label>
+    <input type="date" id="weekStart" required>
+
+    <label for="weekEnd">Week End Date:</label>
+    <input type="date" id="weekEnd" required>
+
+    <!-- Engineer name dropdown -->
+    <label for="engineerName">Candela Engineer:</label>
+    <select id="engineerName" required>
+        <option value="Rajendra">Rajendra</option>
+        <option value="Bhavya">Bhavya</option>
+        <option value="Lasya">Lasya</option>
+    </select>
+
+    <!-- Project name input -->
+    <label for="projectName">Project:</label>
+    <input type="text" id="projectName" placeholder="Enter project name" required>
+
+    <!-- Resource identification dropdown -->
+    <label for="resourceId">Resource Identification/Task Type:</label>
+    <select id="resourceId" required>
+        <option value="Test Execution">Test Execution</option>
+        <option value="Test Setup">Test Setup</option>
+        <option value="Test Analysis">Test Analysis</option>
+    </select>
+
+    <!-- Description input -->
+    <label for="description">Description:</label>
+    <textarea id="description" placeholder="Describe the task..." required></textarea>
+
+    <!-- Hours input -->
+    <label for="hoursSpent">Hours Spent:</label>
+    <input type="number" id="hoursSpent" min="1" max="24" required>
+
+    <button type="button" onclick="addTask()">Add Task</button>
+</form>
+
+<!-- Table to display logged tasks -->
+<table id="taskTable">
+    <thead>
+        <tr>
+            <th>Week Start</th>
+            <th>Week End</th>
+            <th>Candela Engineer</th>
+            <th>Project</th>
+            <th>Resource Identification</th>
+            <th>Description</th>
+            <th>Hours</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<!-- Button to download CSV -->
+<button onclick="downloadCSV()">Download CSV</button>
+
+<script>
+    let taskData = [];
+
+    function addTask() {
+        let weekStart = document.getElementById("weekStart").value;
+        let weekEnd = document.getElementById("weekEnd").value;
+        let engineerName = document.getElementById("engineerName").value;
+        let projectName = document.getElementById("projectName").value;
+        let resourceId = document.getElementById("resourceId").value;
+        let description = document.getElementById("description").value;
+        let hoursSpent = document.getElementById("hoursSpent").value;
+
+        if (weekStart && weekEnd && engineerName && projectName && resourceId && description && hoursSpent) {
+            let task = { weekStart, weekEnd, engineerName, projectName, resourceId, description, hoursSpent };
+            taskData.push(task);
+
+            let table = document.getElementById('taskTable').getElementsByTagName('tbody')[0];
+            let newRow = table.insertRow();
+            newRow.insertCell(0).innerHTML = weekStart;
+            newRow.insertCell(1).innerHTML = weekEnd;
+            newRow.insertCell(2).innerHTML = engineerName;
+            newRow.insertCell(3).innerHTML = projectName;
+            newRow.insertCell(4).innerHTML = resourceId;
+            newRow.insertCell(5).innerHTML = description;
+            newRow.insertCell(6).innerHTML = hoursSpent;
+        }
+    }
+
+    function downloadCSV() {
+        let csvContent = "data:text/csv;charset=utf-8,Week Start,Week End,Candela Engineer,Project,Resource Identification,Description,Hours\n";
+        taskData.forEach(row => {
+            csvContent += `${row.weekStart},${row.weekEnd},${row.engineerName},${row.projectName},${row.resourceId},${row.description},${row.hoursSpent}\n`;
+        });
+
+        let encodedUri = encodeURI(csvContent);
+        let link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "task_data.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // Reminder function
+    function sendReminder() {
+        alert("Reminder: Please log your tasks for today!");
+    }
+
+    // Set a reminder every day at 5 PM
+    let now = new Date();
+    let millisTill5 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17, 0, 0, 0) - now;
+    if (millisTill5 < 0) {
+         millisTill5 += 86400000; // If it's past 5pm, schedule for the next day
+    }
+    setTimeout(function() {
+        sendReminder();
+        setInterval(sendReminder, 86400000); // Repeat every 24 hours
+    }, millisTill5);
+</script>
+
+</body>
+</html>
+
